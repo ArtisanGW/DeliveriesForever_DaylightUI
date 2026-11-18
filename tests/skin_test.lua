@@ -20,11 +20,20 @@ for _, fn in ipairs(timers) do fn() end
 assert(calls.skinFor == "DeliveriesForever" and type(skin) == "function", "a skin for Deliveries Forever, once login is done")
 
 local dressed = {}
-local Kit = { Window = function(f) dressed.window = f end, Auto = function(f, o) dressed.auto = f end }
+local Kit = { Window = function(f) dressed.window = f end, Close = function(b) dressed.close = b end,
+              Auto = function(f, o) dressed.auto = f; dressed.skip = o and o.skip end }
 assert(skin(Kit) == false, "no panel yet: asked again later")
 local hooked
-_G.DeliveriesForeverPanel = { HookScript = function(_, n, fn) hooked = n end }
+-- The panel's children: text buttons (UIPanelButtonTemplate, with .Left) and its X.
+local function button(text, threePart)
+    return { GetObjectType = function() return "Button" end, GetText = function() return text end, Left = threePart and {} or nil }
+end
+local skipBtn, again, x = button("Skip", true), button("Fill again", true), button(nil, false)
+_G.DeliveriesForeverPanel = { HookScript = function(_, n, fn) hooked = n end,
+    GetChildren = function() return skipBtn, again, x end }
 skin(Kit)
 assert(dressed.window == DeliveriesForeverPanel and dressed.auto == DeliveriesForeverPanel, "the panel dressed: window shell and controls")
+assert(dressed.close == x, "the X gets Daylight UI's close look")
+assert(dressed.skip and dressed.skip[x] and not dressed.skip[skipBtn], "and Auto leaves it alone, dressing the text buttons")
 assert(hooked == "OnShow", "the picker list made later is dressed as the panel shows")
 print("skin_test: ok")
