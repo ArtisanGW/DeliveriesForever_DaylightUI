@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: Deliveries Forever Skin (DaylightUI Plugin)
+## Notes: Daylight UI's look on Deliveries Forever's mailbox panel. Deliveries Forever itself knows nothing of it.
+## Author: Artisan
+## Version: 1.0.0
+## Dependencies: DaylightUI, DeliveriesForever
+
+Skin.lua
